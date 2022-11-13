@@ -30,6 +30,7 @@ def brutforce_algorithm(matrix):
 
             return sum(binary_array), indexes_of_covered_vertices
 
+
 # реализация приближенного алгоритма
 def approximate_algorithm(matrix):
     temp_matrix = copy.deepcopy(matrix)
@@ -46,5 +47,14 @@ def load_matrix_from_file(file_name):
 
 if __name__ == '__main__':
     input_file_name = "input.txt"
+
+    # удаляет ',' в input файле
+    # ',' появляются после сайта graphonline
+    with open(input_file_name, 'r') as file:
+        filedata = file.read()
+    filedata = filedata.replace(',', '')
+    with open(input_file_name, 'w') as file:
+        file.write(filedata)
+
     matrix = load_matrix_from_file(input_file_name)
     print(brutforce_algorithm(matrix))
