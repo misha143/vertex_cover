@@ -39,7 +39,10 @@ def brutforce_algorithm(matrix):
 
 # загружаем граф в виде матрицы смежности и возвращаем его
 def load_matrix_from_file(file_name):
-    matrix = np.loadtxt(file_name, int, skiprows=1)
+    # пока для тестов закоментил
+    # поменять, чтобы в первой было введено n, но по факты оно не нужно, через len(matrix) потом узнаем n
+    # matrix = np.loadtxt(file_name, int, skiprows=1)
+    matrix = np.loadtxt(file_name, int)
     return matrix
 
 
