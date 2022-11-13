@@ -7,9 +7,6 @@ import numpy as np
 def brutforce_algorithm(matrix):
     n = len(matrix)
 
-    temp_ans_arr = []
-    ans_cnt = n + 1
-
     # генерируем все возомжные варианты расстановки "камер"
     for q in range(1, 2 ** n):
 
@@ -24,19 +21,14 @@ def brutforce_algorithm(matrix):
                     if el == 1:
                         temp[index] = 1
 
-        # если покрыли все вершины и кол-во "камер" меньше чем в прошлые разы, то заполняем в ответы
-        sum_binary_array = sum(binary_array)
-        if sum(temp) == n and sum_binary_array < ans_cnt:
-            ans_cnt = sum_binary_array
-            temp_ans_arr = binary_array
-    #     todo: дописать break
+        # если покрыли все вершины выводим ответы
+        if sum(temp) == n:
+            indexes_of_covered_vertices = []
+            for index, el in enumerate(binary_array):
+                if el == 1:
+                    indexes_of_covered_vertices.append(index + 1)
 
-    # заполняем ответный массив вершин
-    ans_arr = []
-    for index, el in enumerate(temp_ans_arr):
-        if el == 1:
-            ans_arr.append(index + 1)
-    return ans_cnt, ans_arr
+            return sum(binary_array), indexes_of_covered_vertices
 
 
 # загружаем граф в виде матрицы смежности и возвращаем его
