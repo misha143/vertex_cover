@@ -30,6 +30,10 @@ def brutforce_algorithm(matrix):
 
             return sum(binary_array), indexes_of_covered_vertices
 
+# реализация приближенного алгоритма
+def approximate_algorithm(matrix):
+    temp_matrix = copy.deepcopy(matrix)
+
 
 # загружаем граф в виде матрицы смежности и возвращаем его
 def load_matrix_from_file(file_name):
