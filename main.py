@@ -1,5 +1,4 @@
 import copy
-
 import numpy as np
 
 
@@ -11,10 +10,11 @@ def brutforce_algorithm(matrix):
     for q in range(1, 2 ** n):
 
         # создаём список. конвертируем число int -> binary. слева заполняем нулями до n символов
+        # чтобы получилось, например, число вида 0010 и из него список [0, 0, 1, 0]
         binary_array = [int(z) for z in f"{q:b}".zfill(n)]
         temp = copy.deepcopy(binary_array)
 
-        # закрашиваем вершины, которые мы видим из ранее заданных вершин с "камерами"
+        # помечаем вершины которые попали в вершинное покрытие
         for i in range(n):
             if binary_array[i] == 1:
                 for index, el in enumerate(matrix[i]):
