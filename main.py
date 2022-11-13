@@ -78,6 +78,11 @@ def approximate_algorithm(main_matrix):
     return len(w), sorted(w)
 
 
+def greedy_algorithm():
+    # https://pastebin.com/1hNzFYmJ
+    print()
+
+
 # загружаем граф в виде матрицы смежности и возвращаем его
 def load_matrix_from_file(file_name):
     # пока для тестов закоментил
