@@ -77,7 +77,7 @@ def approximate_algorithm(main_matrix):
 
     return len(w), sorted(w)
 
-
+# реализация жадного алгоритма
 def greedy_algorithm():
     # https://pastebin.com/1hNzFYmJ
     print()
