@@ -25,9 +25,11 @@ def brutforce_algorithm(matrix):
                         temp[index] = 1
 
         # если покрыли все вершины и кол-во "камер" меньше чем в прошлые разы, то заполняем в ответы
-        if sum(temp) == n and sum(binary_array) < ans_cnt:
-            ans_cnt = sum(binary_array)
+        sum_binary_array = sum(binary_array)
+        if sum(temp) == n and sum_binary_array < ans_cnt:
+            ans_cnt = sum_binary_array
             temp_ans_arr = binary_array
+    #     todo: дописать break
 
     # заполняем ответный массив вершин
     ans_arr = []
