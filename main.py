@@ -31,15 +31,57 @@ def brutforce_algorithm(matrix):
             return sum(binary_array), indexes_of_covered_vertices
 
 
-# реализация приближенного алгоритма
-def approximate_algorithm(matrix):
-    temp_matrix = copy.deepcopy(matrix)
+# реализация приближённого алгоритма
+def approximate_algorithm(main_matrix):
+    n = len(main_matrix)
+    matrix = copy.deepcopy(main_matrix)
+
+    # вершинное покрытие
+
+    w = []
+    viewed = set()
+
+    # зануляем выше главной диагонали
+    for i in range(n):
+        for j in range(i + 1, n):
+            matrix[i][j] = 0
+
+    # пока в матрице есть рёбра
+    # идем по ниже главной диагонали
+    while matrix.max() == 1:
+        for i in range(n):
+            for j in range(0, i):
+                # если есть
+                if matrix[i][j] == 1:
+                    w.append(i + 1)
+                    w.append(j + 1)
+                    viewed.add(i + 1)
+                    viewed.add(j + 1)
+
+                    for s in range(i + 1, n):
+                        if matrix[s][i] == 1:
+                            viewed.add(s + 1)
+                            matrix[s][i] = 0
+
+                    for s in range(j + 1, n):
+                        if matrix[s][j] == 1:
+                            viewed.add(s + 1)
+                            matrix[s][j] = 0
+
+    # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
+    if len(viewed) != n:
+        temp = set(x for x in range(1, n + 1))
+        temp2 = temp.difference(viewed)
+        for el in temp2:
+            w.append(el)
+
+    return len(w), sorted(w)
 
 
 # загружаем граф в виде матрицы смежности и возвращаем его
 def load_matrix_from_file(file_name):
     # пока для тестов закоментил
-    # поменять, чтобы в первой было введено n, но по факты оно не нужно, через len(matrix) потом узнаем n
+    # поменять, чтобы в первой было введено n, но по факту оно не нужно, через len(matrix) потом узнаем n
     # matrix = np.loadtxt(file_name, int, skiprows=1)
     matrix = np.loadtxt(file_name, int)
     return matrix
@@ -57,4 +99,6 @@ if __name__ == '__main__':
         file.write(filedata)
 
     matrix = load_matrix_from_file(input_file_name)
-    print(brutforce_algorithm(matrix))
+
+    # print(brutforce_algorithm(matrix))
+    print(approximate_algorithm(matrix))
