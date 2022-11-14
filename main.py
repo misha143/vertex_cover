@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import random
 
 
 # реализация переборного алгоритма
@@ -136,15 +137,31 @@ def greedy_algorithm(main_matrix):
 
 # загружаем граф в виде матрицы смежности и возвращаем его
 def load_matrix_from_file(file_name):
-    # пока для тестов закоментил
-    # поменять, чтобы в первой было введено n, но по факту оно не нужно, через len(matrix) потом узнаем n
-    # matrix = np.loadtxt(file_name, int, skiprows=1)
     matrix = np.loadtxt(file_name, int)
     return matrix
 
 
+def tests_generator(number_of_graphs, percentage_of_edges):
+    for n in range(3, number_of_graphs + 1):
+        matrix = [[0 for i in range(n)] for j in range(n)]
+        for i in range(n):
+            flag = False
+            for j in range(0, i):
+                if random.uniform(0, 1) < percentage_of_edges:
+                    matrix[i][j] = 1
+                    matrix[j][i] = 1
+                    flag = True
+            if not flag:
+                if i != 0:
+                    pos = random.randrange(0, i)
+                    matrix[i][pos] = 1
+                    matrix[pos][i] = 1
+        np.savetxt(f'tests/{n}.txt', matrix, fmt='%d', delimiter=' ')
+        np.savetxt(f'tests/graphonline/{n}.txt', matrix, fmt='%d', delimiter=', ', newline=', \n')
+
+
 if __name__ == '__main__':
-    input_file_name = "input.txt"
+    input_file_name = "tests/15.txt"
 
     # удаляет ',' в input файле
     # ',' появляются после сайта graphonline
@@ -159,3 +176,5 @@ if __name__ == '__main__':
     print(brutforce_algorithm(matrix))
     print(approximate_algorithm(matrix))
     print(greedy_algorithm(matrix))
+
+    # tests_generator(15, 0.4)
