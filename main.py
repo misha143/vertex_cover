@@ -5,33 +5,32 @@ import numpy as np
 # реализация переборного алгоритма
 def brutforce_algorithm(matrix):
     n = len(matrix)
-    ans = [1 for i in range(n)]
+    smallest_vertex_cover = [1 for i in range(n)]
     # генерируем все возможные варианты расстановки вершинного покрытия
-    for q in range(1, 2 ** n):
+    for number in range(1, 2 ** n):
 
         # создаём список. конвертируем число int -> binary. слева заполняем нулями до n символов
         # чтобы получилось, например, число вида 0010 и из него список [0, 0, 1, 0]
-        binary_array = [int(z) for z in f"{q:b}".zfill(n)]
+        vertex_cover_indexes = [int(z) for z in f"{number:b}".zfill(n)]
+        viewed_vertices = copy.deepcopy(vertex_cover_indexes)
 
-        temp = copy.deepcopy(binary_array)
-
-        # помечаем вершины, которые попали в вершинное покрытие
+        # добавляем в "увиденные" смежные вершины
         for i in range(n):
-            if binary_array[i] == 1:
-                for index, el in enumerate(matrix[i]):
-                    if el == 1:
-                        temp[index] = 1
+            if vertex_cover_indexes[i] == 1:
+                for index, element in enumerate(matrix[i]):
+                    if element == 1:
+                        viewed_vertices[index] = 1
 
-        # если покрыли все вершины выводим в ans при условии
-        if sum(temp) == n and sum(ans) > sum(binary_array):
-            ans = binary_array
+        # если покрыли все вершины выводим в smallest_vertex_cover при условии
+        if sum(viewed_vertices) == n and sum(smallest_vertex_cover) > sum(vertex_cover_indexes):
+            smallest_vertex_cover = vertex_cover_indexes
 
     indexes_of_covered_vertices = []
-    for index, el in enumerate(ans):
-        if el == 1:
+    for index, element in enumerate(smallest_vertex_cover):
+        if element == 1:
             indexes_of_covered_vertices.append(index + 1)
 
-    return sum(ans), indexes_of_covered_vertices
+    return sum(smallest_vertex_cover), indexes_of_covered_vertices
 
 
 # реализация приближённого алгоритма
@@ -41,8 +40,8 @@ def approximate_algorithm(main_matrix):
 
     # вершинное покрытие
 
-    w = []
-    viewed = set()
+    smallest_vertex_cover = []
+    viewed_vertices = set()
 
     # зануляем выше главной диагонали
     for i in range(n):
@@ -56,86 +55,83 @@ def approximate_algorithm(main_matrix):
             for j in range(0, i):
                 # если есть
                 if matrix[i][j] == 1:
-                    w.append(i + 1)
-                    w.append(j + 1)
-                    viewed.add(i + 1)
-                    viewed.add(j + 1)
+                    smallest_vertex_cover.append(i + 1)
+                    smallest_vertex_cover.append(j + 1)
+                    viewed_vertices.add(i + 1)
+                    viewed_vertices.add(j + 1)
 
+                    # добавляем в "увиденные" смежные вершины
                     for s in range(i + 1, n):
                         if matrix[s][i] == 1:
-                            viewed.add(s + 1)
+                            viewed_vertices.add(s + 1)
                             matrix[s][i] = 0
 
                     for s in range(j + 1, n):
                         if matrix[s][j] == 1:
-                            viewed.add(s + 1)
+                            viewed_vertices.add(s + 1)
                             matrix[s][j] = 0
 
     # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
-    if len(viewed) != n:
-        temp = set(x for x in range(1, n + 1))
-        temp2 = temp.difference(viewed)
-        for el in temp2:
-            w.append(el)
+    if len(viewed_vertices) != n:
+        set_of_all_vertices = set(x for x in range(1, n + 1))
+        set_of_vertices_to_add_to_the_coverage = set_of_all_vertices.difference(viewed_vertices)
+        for element in set_of_vertices_to_add_to_the_coverage:
+            smallest_vertex_cover.append(element)
 
-    return len(w), sorted(w)
+    return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
 
 # реализация жадного алгоритма
 def greedy_algorithm(main_matrix):
     # подсчёт степеней вершин в графе
-    def count_vertex_degs(matrix):
+    def count_degrees_of_vertices(matrix):
         n = len(matrix)
-        temp = []
+        degrees_of_vertices = []
         for i in range(n):
-            temp.append(sum(matrix[i]))
-        return temp
+            degrees_of_vertices.append(sum(matrix[i]))
+        return degrees_of_vertices
 
     # вершинное покрытие
-    w = []
-    viewed = set()
+    smallest_vertex_cover = []
+    viewed_vertices = set()
 
     n = len(main_matrix)
     matrix = copy.deepcopy(main_matrix)
 
-    vertex_deg = count_vertex_degs(matrix)
+    degrees_of_vertices = count_degrees_of_vertices(matrix)
 
     # пока есть ребра или мы не "увидели" все вершины через помеченные покрытыми
-    while sum(vertex_deg) != 0 and len(viewed) != n:
-        vertex_index = vertex_deg.index(max(vertex_deg))
+    while sum(degrees_of_vertices) != 0 and len(viewed_vertices) != n:
+        huge_vertex = degrees_of_vertices.index(max(degrees_of_vertices))
         # добавляем в покрытие
-        w.append(vertex_index + 1)
-        viewed.add(vertex_index + 1)
+        smallest_vertex_cover.append(huge_vertex + 1)
+        viewed_vertices.add(huge_vertex + 1)
 
         # удаляем ребра инцидентные покрытой вершине
         # также помечая видимые вершины по этим ребрам
         for i in range(n):
-            if matrix[i][vertex_index] == 1:
-                viewed.add(i + 1)
+            if matrix[i][huge_vertex] == 1:
+                viewed_vertices.add(i + 1)
 
-                # случай если граф не связанный, чтобы не добавлялись уже уведенные вершины, пока не все добавились в увиденные все вершины, хотя где связанный то там уже все увиденные
-                # 0, 1, 1, 1, 0,
-                # 1, 0, 0, 1, 0,
-                # 1, 0, 0, 1, 0,
-                # 1, 1, 1, 0, 0,
-                # 0, 0, 0, 0, 0,
+                # случай если граф не связанный
                 for q in range(n):
-                    if matrix[i][q] == 1 and q + 1 in viewed and i + 1 in viewed:
+                    if matrix[i][q] == 1 and q + 1 in viewed_vertices and i + 1 in viewed_vertices:
                         matrix[i][q] = 0
                         matrix[q][i] = 0
-            matrix[i][vertex_index] = 0
-            matrix[vertex_index][i] = 0
+            matrix[i][huge_vertex] = 0
+            matrix[huge_vertex][i] = 0
 
-        vertex_deg = count_vertex_degs(matrix)
+        degrees_of_vertices = count_degrees_of_vertices(matrix)
 
     # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
-    if len(viewed) != n:
-        temp = set(x for x in range(1, n + 1))
-        temp2 = temp.difference(viewed)
-        for el in temp2:
-            w.append(el)
+    # например, если граф не связный
+    if len(viewed_vertices) != n:
+        set_of_all_vertices = set(x for x in range(1, n + 1))
+        set_of_vertices_to_add_to_the_coverage = set_of_all_vertices.difference(viewed_vertices)
+        for element in set_of_vertices_to_add_to_the_coverage:
+            smallest_vertex_cover.append(element)
 
-    return len(w), sorted(w)
+    return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
 
 # загружаем граф в виде матрицы смежности и возвращаем его
