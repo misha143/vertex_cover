@@ -15,7 +15,7 @@ def brutforce_algorithm(matrix):
 
         temp = copy.deepcopy(binary_array)
 
-        # помечаем вершины которые попали в вершинное покрытие
+        # помечаем вершины, которые попали в вершинное покрытие
         for i in range(n):
             if binary_array[i] == 1:
                 for index, el in enumerate(matrix[i]):
