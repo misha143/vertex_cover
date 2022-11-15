@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-import random
+import time
 
 
 # реализация переборного алгоритма
@@ -40,7 +40,6 @@ def approximate_algorithm(main_matrix):
     matrix = copy.deepcopy(main_matrix)
 
     # вершинное покрытие
-
     smallest_vertex_cover = []
     viewed_vertices = set()
 
@@ -50,27 +49,35 @@ def approximate_algorithm(main_matrix):
             matrix[i][j] = 0
 
     # пока в матрице есть рёбра
-    # идем по ниже главной диагонали
-    while matrix.max() == 1:
-        for i in range(n):
-            for j in range(0, i):
-                # если есть
-                if matrix[i][j] == 1:
-                    smallest_vertex_cover.append(i + 1)
-                    smallest_vertex_cover.append(j + 1)
-                    viewed_vertices.add(i + 1)
-                    viewed_vertices.add(j + 1)
+    # идем ниже главной диагонали
+    exitFlag = False
+    for i in range(n):
+        if exitFlag:
+            break
+        for j in range(0, i):
+            # если есть
+            if matrix[i][j] == 1:
+                smallest_vertex_cover.append(i + 1)
+                smallest_vertex_cover.append(j + 1)
+                viewed_vertices.add(i + 1)
+                viewed_vertices.add(j + 1)
+                matrix[i][j] = 0
 
-                    # добавляем в "увиденные" смежные вершины
-                    for s in range(i + 1, n):
-                        if matrix[s][i] == 1:
-                            viewed_vertices.add(s + 1)
-                            matrix[s][i] = 0
+                # добавляем в "увиденные" смежные вершины
+                for s in range(i + 1, n):
+                    if matrix[s][i] == 1:
+                        viewed_vertices.add(s + 1)
+                        matrix[s][i] = 0
 
-                    for s in range(j + 1, n):
-                        if matrix[s][j] == 1:
-                            viewed_vertices.add(s + 1)
-                            matrix[s][j] = 0
+                for s in range(j + 1, n):
+                    if matrix[s][j] == 1:
+                        viewed_vertices.add(s + 1)
+                        matrix[s][j] = 0
+
+                # если ребер нет или "увидели" все
+                if matrix.max() == 0 or len(viewed_vertices) == n:
+                    exitFlag = True
+                    break
 
     # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
     if len(viewed_vertices) != n:
@@ -78,7 +85,6 @@ def approximate_algorithm(main_matrix):
         set_of_vertices_to_add_to_the_coverage = set_of_all_vertices.difference(viewed_vertices)
         for element in set_of_vertices_to_add_to_the_coverage:
             smallest_vertex_cover.append(element)
-
     return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
 
@@ -113,14 +119,13 @@ def greedy_algorithm(main_matrix):
         for i in range(n):
             if matrix[i][huge_vertex] == 1:
                 viewed_vertices.add(i + 1)
-
                 # случай если граф не связанный
                 for q in range(n):
                     if matrix[i][q] == 1 and q + 1 in viewed_vertices and i + 1 in viewed_vertices:
                         matrix[i][q] = 0
                         matrix[q][i] = 0
-            matrix[i][huge_vertex] = 0
-            matrix[huge_vertex][i] = 0
+                matrix[i][huge_vertex] = 0
+                matrix[huge_vertex][i] = 0
 
         degrees_of_vertices = count_degrees_of_vertices(matrix)
 
@@ -141,40 +146,52 @@ def load_matrix_from_file(file_name):
     return matrix
 
 
-def tests_generator(number_of_graphs, percentage_of_edges):
-    for n in range(3, number_of_graphs + 1):
-        matrix = [[0 for i in range(n)] for j in range(n)]
-        for i in range(n):
-            flag = False
-            for j in range(0, i):
-                if random.uniform(0, 1) < percentage_of_edges:
-                    matrix[i][j] = 1
-                    matrix[j][i] = 1
-                    flag = True
-            if not flag:
-                if i != 0:
-                    pos = random.randrange(0, i)
-                    matrix[i][pos] = 1
-                    matrix[pos][i] = 1
-        np.savetxt(f'tests/{n}.txt', matrix, fmt='%d', delimiter=' ')
-        np.savetxt(f'tests/graphonline/{n}.txt', matrix, fmt='%d', delimiter=', ', newline=', \n')
-
-
 if __name__ == '__main__':
-    input_file_name = "tests/15.txt"
+    # input_file_name = "tests/3.txt"
+    #
+    # # удаляет ',' в input файле
+    # # ',' появляются после сайта graphonline
+    # with open(input_file_name, 'r') as file:
+    #     filedata = file.read()
+    # filedata = filedata.replace(',', '')
+    # with open(input_file_name, 'w') as file:
+    #     file.write(filedata)
+    #
+    # matrix = load_matrix_from_file(input_file_name)
+    #
+    # print(brutforce_algorithm(matrix))
+    # print(approximate_algorithm(matrix))
+    # print(greedy_algorithm(matrix))
 
-    # удаляет ',' в input файле
-    # ',' появляются после сайта graphonline
-    with open(input_file_name, 'r') as file:
-        filedata = file.read()
-    filedata = filedata.replace(',', '')
-    with open(input_file_name, 'w') as file:
-        file.write(filedata)
+    s = ""
+    max_time = 120
+    brutforce_algorithm_time = 0
 
-    matrix = load_matrix_from_file(input_file_name)
+    file_num = 18
+    loop_cnt1 = 1
+    loop_cnt2 = 5
+    with open('results.txt', 'w') as file:
+        while (brutforce_algorithm_time < max_time):
+            input_file_name = f"tests/{file_num}.txt"
+            matrix = load_matrix_from_file(input_file_name)
 
-    print(brutforce_algorithm(matrix))
-    print(approximate_algorithm(matrix))
-    print(greedy_algorithm(matrix))
+            s = f"{file_num}\t"
 
-    # tests_generator(15, 0.4)
+            start_time = time.time()
+            for i in range(loop_cnt1):
+                a, b = brutforce_algorithm(matrix)
+            brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
+            s += f"{brutforce_algorithm_time}\t{a}\t"
+
+            start_time = time.time()
+            for i in range(loop_cnt2):
+                a, b = approximate_algorithm(matrix)
+            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
+
+            start_time = time.time()
+            for i in range(loop_cnt2):
+                a, b = greedy_algorithm(matrix)
+            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
+
+            file.write(s)
+            file_num += 1
