@@ -22,4 +22,4 @@ def tests_generator(number_of_graphs, percentage_of_edges):
         np.savetxt(f'tests/graphonline/{n}.txt', matrix, fmt='%d', delimiter=', ', newline=', \n')
 
 
-tests_generator(300, 0.4)
+tests_generator(22, 0.4)

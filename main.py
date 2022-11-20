@@ -79,12 +79,7 @@ def approximate_algorithm(main_matrix):
                     exitFlag = True
                     break
 
-    # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
-    if len(viewed_vertices) != n:
-        set_of_all_vertices = set(x for x in range(1, n + 1))
-        set_of_vertices_to_add_to_the_coverage = set_of_all_vertices.difference(viewed_vertices)
-        for element in set_of_vertices_to_add_to_the_coverage:
-            smallest_vertex_cover.append(element)
+
     return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
 
@@ -129,13 +124,7 @@ def greedy_algorithm(main_matrix):
 
         degrees_of_vertices = count_degrees_of_vertices(matrix)
 
-    # если мы не покрыли все вершины, то добавляем их в вершинное покрытие
-    # например, если граф не связный
-    if len(viewed_vertices) != n:
-        set_of_all_vertices = set(x for x in range(1, n + 1))
-        set_of_vertices_to_add_to_the_coverage = set_of_all_vertices.difference(viewed_vertices)
-        for element in set_of_vertices_to_add_to_the_coverage:
-            smallest_vertex_cover.append(element)
+
 
     return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
@@ -147,51 +136,51 @@ def load_matrix_from_file(file_name):
 
 
 if __name__ == '__main__':
-    # input_file_name = "tests/3.txt"
+    input_file_name = "input.txt"
+
+    # удаляет ',' в input файле
+    # ',' появляются после сайта graphonline
+    with open(input_file_name, 'r') as file:
+        filedata = file.read()
+    filedata = filedata.replace(',', '')
+    with open(input_file_name, 'w') as file:
+        file.write(filedata)
+
+    matrix = load_matrix_from_file(input_file_name)
+
+    print(brutforce_algorithm(matrix))
+    print(approximate_algorithm(matrix))
+    print(greedy_algorithm(matrix))
+
+    # s = ""
+    # max_time = 120
+    # brutforce_algorithm_time = 0
     #
-    # # удаляет ',' в input файле
-    # # ',' появляются после сайта graphonline
-    # with open(input_file_name, 'r') as file:
-    #     filedata = file.read()
-    # filedata = filedata.replace(',', '')
-    # with open(input_file_name, 'w') as file:
-    #     file.write(filedata)
+    # file_num = 18
+    # loop_cnt1 = 1
+    # loop_cnt2 = 5
+    # with open('results.txt', 'w') as file:
+    #     while (brutforce_algorithm_time < max_time):
+    #         input_file_name = f"tests/{file_num}.txt"
+    #         matrix = load_matrix_from_file(input_file_name)
     #
-    # matrix = load_matrix_from_file(input_file_name)
+    #         s = f"{file_num}\t"
     #
-    # print(brutforce_algorithm(matrix))
-    # print(approximate_algorithm(matrix))
-    # print(greedy_algorithm(matrix))
-
-    s = ""
-    max_time = 120
-    brutforce_algorithm_time = 0
-
-    file_num = 18
-    loop_cnt1 = 1
-    loop_cnt2 = 5
-    with open('results.txt', 'w') as file:
-        while (brutforce_algorithm_time < max_time):
-            input_file_name = f"tests/{file_num}.txt"
-            matrix = load_matrix_from_file(input_file_name)
-
-            s = f"{file_num}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt1):
-                a, b = brutforce_algorithm(matrix)
-            brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
-            s += f"{brutforce_algorithm_time}\t{a}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt2):
-                a, b = approximate_algorithm(matrix)
-            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt2):
-                a, b = greedy_algorithm(matrix)
-            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
-
-            file.write(s)
-            file_num += 1
+    #         start_time = time.time()
+    #         for i in range(loop_cnt1):
+    #             a, b = brutforce_algorithm(matrix)
+    #         brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
+    #         s += f"{brutforce_algorithm_time}\t{a}\t"
+    #
+    #         start_time = time.time()
+    #         for i in range(loop_cnt2):
+    #             a, b = approximate_algorithm(matrix)
+    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
+    #
+    #         start_time = time.time()
+    #         for i in range(loop_cnt2):
+    #             a, b = greedy_algorithm(matrix)
+    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
+    #
+    #         file.write(s)
+    #         file_num += 1
