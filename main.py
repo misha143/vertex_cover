@@ -13,17 +13,18 @@ def brutforce_algorithm(matrix):
         # создаём список. конвертируем число int -> binary. слева заполняем нулями до n символов
         # чтобы получилось, например, число вида 0010 и из него список [0, 0, 1, 0]
         vertex_cover_indexes = [int(z) for z in f"{number:b}".zfill(n)]
-        viewed_vertices = copy.deepcopy(vertex_cover_indexes)
 
-        # добавляем в "увиденные" смежные вершины
+        temp_matrix = copy.deepcopy(matrix)
+        # удаляем ребра
         for i in range(n):
             if vertex_cover_indexes[i] == 1:
-                for index, element in enumerate(matrix[i]):
+                for index, element in enumerate(temp_matrix[i]):
                     if element == 1:
-                        viewed_vertices[index] = 1
+                        temp_matrix[i][index] = 0
+                        temp_matrix[index][i] = 0
 
-        # если покрыли все вершины выводим в smallest_vertex_cover при условии
-        if sum(viewed_vertices) == n and sum(smallest_vertex_cover) > sum(vertex_cover_indexes):
+        # если покрыли все, то ответный массив обновляем
+        if temp_matrix.max() == 0 and sum(smallest_vertex_cover) > sum(vertex_cover_indexes):
             smallest_vertex_cover = vertex_cover_indexes
 
     indexes_of_covered_vertices = []
@@ -41,7 +42,6 @@ def approximate_algorithm(main_matrix):
 
     # вершинное покрытие
     smallest_vertex_cover = []
-    viewed_vertices = set()
 
     # зануляем выше главной диагонали
     for i in range(n):
@@ -59,26 +59,30 @@ def approximate_algorithm(main_matrix):
             if matrix[i][j] == 1:
                 smallest_vertex_cover.append(i + 1)
                 smallest_vertex_cover.append(j + 1)
-                viewed_vertices.add(i + 1)
-                viewed_vertices.add(j + 1)
+                print(i+1,j+1)
                 matrix[i][j] = 0
 
-                # добавляем в "увиденные" смежные вершины
+                # удаляем смежные ребра
                 for s in range(i + 1, n):
                     if matrix[s][i] == 1:
-                        viewed_vertices.add(s + 1)
                         matrix[s][i] = 0
 
                 for s in range(j + 1, n):
                     if matrix[s][j] == 1:
-                        viewed_vertices.add(s + 1)
                         matrix[s][j] = 0
 
-                # если ребер нет или "увидели" все
-                if matrix.max() == 0 or len(viewed_vertices) == n:
+                for s in range(0, i):
+                    if matrix[i][s] == 1:
+                        matrix[i][s] = 0
+
+                for s in range(0, j):
+                    if matrix[j][s] == 1:
+                        matrix[j][s] = 0
+
+                # если ребер нет
+                if matrix.max() == 0:
                     exitFlag = True
                     break
-
 
     return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
@@ -95,36 +99,25 @@ def greedy_algorithm(main_matrix):
 
     # вершинное покрытие
     smallest_vertex_cover = []
-    viewed_vertices = set()
 
     n = len(main_matrix)
     matrix = copy.deepcopy(main_matrix)
 
     degrees_of_vertices = count_degrees_of_vertices(matrix)
 
-    # пока есть ребра или мы не "увидели" все вершины через помеченные покрытыми
-    while sum(degrees_of_vertices) != 0 and len(viewed_vertices) != n:
+    # пока есть ребра
+    while sum(degrees_of_vertices) != 0:
         huge_vertex = degrees_of_vertices.index(max(degrees_of_vertices))
         # добавляем в покрытие
         smallest_vertex_cover.append(huge_vertex + 1)
-        viewed_vertices.add(huge_vertex + 1)
 
         # удаляем ребра инцидентные покрытой вершине
-        # также помечая видимые вершины по этим ребрам
         for i in range(n):
             if matrix[i][huge_vertex] == 1:
-                viewed_vertices.add(i + 1)
-                # случай если граф не связанный
-                for q in range(n):
-                    if matrix[i][q] == 1 and q + 1 in viewed_vertices and i + 1 in viewed_vertices:
-                        matrix[i][q] = 0
-                        matrix[q][i] = 0
                 matrix[i][huge_vertex] = 0
                 matrix[huge_vertex][i] = 0
 
         degrees_of_vertices = count_degrees_of_vertices(matrix)
-
-
 
     return len(smallest_vertex_cover), sorted(smallest_vertex_cover)
 
@@ -136,7 +129,7 @@ def load_matrix_from_file(file_name):
 
 
 if __name__ == '__main__':
-    input_file_name = "input.txt"
+    input_file_name = "tests/18.txt"
 
     # удаляет ',' в input файле
     # ',' появляются после сайта graphonline
