@@ -59,7 +59,6 @@ def approximate_algorithm(main_matrix):
             if matrix[i][j] == 1:
                 smallest_vertex_cover.append(i + 1)
                 smallest_vertex_cover.append(j + 1)
-                print(i+1,j+1)
                 matrix[i][j] = 0
 
                 # удаляем инцидентные ребра
