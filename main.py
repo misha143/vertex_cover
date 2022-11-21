@@ -62,7 +62,7 @@ def approximate_algorithm(main_matrix):
                 print(i+1,j+1)
                 matrix[i][j] = 0
 
-                # удаляем смежные ребра
+                # удаляем инцидентные ребра
                 for s in range(i + 1, n):
                     if matrix[s][i] == 1:
                         matrix[s][i] = 0
