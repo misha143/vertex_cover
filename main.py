@@ -132,47 +132,47 @@ if __name__ == '__main__':
 
     # удаляет ',' в input файле
     # ',' появляются после сайта graph-online
-    with open(input_file_name, 'r') as file:
-        filedata = file.read()
-    filedata = filedata.replace(',', '')
-    with open(input_file_name, 'w') as file:
-        file.write(filedata)
+    # with open(input_file_name, 'r') as file:
+    #     filedata = file.read()
+    # filedata = filedata.replace(',', '')
+    # with open(input_file_name, 'w') as file:
+    #     file.write(filedata)
+    #
+    # matrix = load_matrix_from_file(input_file_name)
+    #
+    # print(brutforce_algorithm(matrix))
+    # print(approximate_algorithm(matrix))
+    # print(greedy_algorithm(matrix))
 
-    matrix = load_matrix_from_file(input_file_name)
+    s = ""
+    max_time = 120
+    brutforce_algorithm_time = 0
 
-    print(brutforce_algorithm(matrix))
-    print(approximate_algorithm(matrix))
-    print(greedy_algorithm(matrix))
+    file_num = 19
+    loop_cnt1 = 1
+    loop_cnt2 = 50
+    with open('results.txt', 'w') as file:
+        while (brutforce_algorithm_time < max_time):
+            input_file_name = f"tests/{file_num}.txt"
+            matrix = load_matrix_from_file(input_file_name)
 
-    # s = ""
-    # max_time = 120
-    # brutforce_algorithm_time = 0
-    #
-    # file_num = 18
-    # loop_cnt1 = 1
-    # loop_cnt2 = 5
-    # with open('results.txt', 'w') as file:
-    #     while (brutforce_algorithm_time < max_time):
-    #         input_file_name = f"tests/{file_num}.txt"
-    #         matrix = load_matrix_from_file(input_file_name)
-    #
-    #         s = f"{file_num}\t"
-    #
-    #         start_time = time.time()
-    #         for i in range(loop_cnt1):
-    #             a, b = brutforce_algorithm(matrix)
-    #         brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
-    #         s += f"{brutforce_algorithm_time}\t{a}\t"
-    #
-    #         start_time = time.time()
-    #         for i in range(loop_cnt2):
-    #             a, b = approximate_algorithm(matrix)
-    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
-    #
-    #         start_time = time.time()
-    #         for i in range(loop_cnt2):
-    #             a, b = greedy_algorithm(matrix)
-    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
-    #
-    #         file.write(s)
-    #         file_num += 1
+            s = f"{file_num}\t"
+
+            start_time = time.time()
+            for i in range(loop_cnt1):
+                a, b = brutforce_algorithm(matrix)
+            brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
+            s += f"{brutforce_algorithm_time}\t{a}\t"
+
+            start_time = time.time()
+            for i in range(loop_cnt2):
+                a, b = approximate_algorithm(matrix)
+            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
+
+            start_time = time.time()
+            for i in range(loop_cnt2):
+                a, b = greedy_algorithm(matrix)
+            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
+
+            file.write(s)
+            file_num += 1
