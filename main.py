@@ -132,7 +132,7 @@ if __name__ == '__main__':
     input_file_name = "tests/18.txt"
 
     # удаляет ',' в input файле
-    # ',' появляются после сайта graphonline
+    # ',' появляются после сайта graph-online
     with open(input_file_name, 'r') as file:
         filedata = file.read()
     filedata = filedata.replace(',', '')
