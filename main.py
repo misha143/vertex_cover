@@ -1,10 +1,15 @@
 import copy
+import glob
+
 import numpy as np
 import time
 
 
 # реализация переборного алгоритма
 def brutforce_algorithm(matrix):
+    if matrix.max() == 0:
+        return (0, [])
+
     n = len(matrix)
     smallest_vertex_cover = [1 for i in range(n)]
     # генерируем все возможные варианты расстановки вершинного покрытия
@@ -128,51 +133,73 @@ def load_matrix_from_file(file_name):
 
 
 if __name__ == '__main__':
-    input_file_name = "tests/18.txt"
 
-    # удаляет ',' в input файле
-    # ',' появляются после сайта graph-online
-    # with open(input_file_name, 'r') as file:
-    #     filedata = file.read()
-    # filedata = filedata.replace(',', '')
-    # with open(input_file_name, 'w') as file:
-    #     file.write(filedata)
+    a = int(input(
+        "Введите 1 если хотите считать данные из файла\nИначе 2 если хотите запустить на файлах из папки tests\n"))
+
+    if a == 1:
+
+        input_file_name = str(input("Введите путь к файлу. Например: input.txt: "))
+
+        # удаляет ',' в input файле
+        # ',' появляются после сайта graph-online
+        with open(input_file_name, 'r') as file:
+            filedata = file.read()
+        filedata = filedata.replace(',', '')
+        with open(input_file_name, 'w') as file:
+            file.write(filedata)
+
+        matrix = load_matrix_from_file(input_file_name)
+        with open('results.txt', 'w', encoding='utf-8') as file:
+            file.write(f"Минимальное вершинное покрытие. На данных из файла {input_file_name}\n")
+            q, w = brutforce_algorithm(matrix)
+            file.write(f"Переборный алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n")
+            q, w = approximate_algorithm(matrix)
+            file.write(f"Приближённый алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n")
+            q, w = greedy_algorithm(matrix)
+            file.write(f"Жадный алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n\n")
+    elif a == 2:
+        with open('results.txt', 'w', encoding='utf-8') as file:
+            arr = glob.glob(glob.escape(r"tests") + "/*.txt")
+            for path in arr:
+                matrix = load_matrix_from_file(path)
+                file.write(f"Минимальное вершинное покрытие. На данных из файла {path}\n")
+                q, w = brutforce_algorithm(matrix)
+                file.write(f"Переборный алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n")
+                q, w = approximate_algorithm(matrix)
+                file.write(f"Приближённый алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n")
+                q, w = greedy_algorithm(matrix)
+                file.write(f"Жадный алгоритм: кол-во вершин в покрытии {q}, вершины в покрытии: {w}\n\n")
+
+    # s = ""
+    # max_time = 120
+    # brutforce_algorithm_time = 0
     #
-    # matrix = load_matrix_from_file(input_file_name)
+    # file_num = 19
+    # loop_cnt1 = 1
+    # loop_cnt2 = 50
+    # with open('results.txt', 'w') as file:
+    #     while (brutforce_algorithm_time < max_time):
+    #         input_file_name = f"tests/{file_num}.txt"
+    #         matrix = load_matrix_from_file(input_file_name)
     #
-    # print(brutforce_algorithm(matrix))
-    # print(approximate_algorithm(matrix))
-    # print(greedy_algorithm(matrix))
-
-    s = ""
-    max_time = 120
-    brutforce_algorithm_time = 0
-
-    file_num = 19
-    loop_cnt1 = 1
-    loop_cnt2 = 50
-    with open('results.txt', 'w') as file:
-        while (brutforce_algorithm_time < max_time):
-            input_file_name = f"tests/{file_num}.txt"
-            matrix = load_matrix_from_file(input_file_name)
-
-            s = f"{file_num}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt1):
-                a, b = brutforce_algorithm(matrix)
-            brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
-            s += f"{brutforce_algorithm_time}\t{a}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt2):
-                a, b = approximate_algorithm(matrix)
-            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
-
-            start_time = time.time()
-            for i in range(loop_cnt2):
-                a, b = greedy_algorithm(matrix)
-            s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
-
-            file.write(s)
-            file_num += 1
+    #         s = f"{file_num}\t"
+    #
+    #         start_time = time.time()
+    #         for i in range(loop_cnt1):
+    #             a, b = brutforce_algorithm(matrix)
+    #         brutforce_algorithm_time = (time.time() - start_time) / loop_cnt1
+    #         s += f"{brutforce_algorithm_time}\t{a}\t"
+    #
+    #         start_time = time.time()
+    #         for i in range(loop_cnt2):
+    #             a, b = approximate_algorithm(matrix)
+    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\t"
+    #
+    #         start_time = time.time()
+    #         for i in range(loop_cnt2):
+    #             a, b = greedy_algorithm(matrix)
+    #         s += f"{(time.time() - start_time) / loop_cnt2}\t{a}\n"
+    #
+    #         file.write(s)
+    #         file_num += 1
